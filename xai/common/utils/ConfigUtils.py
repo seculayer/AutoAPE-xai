@@ -4,7 +4,7 @@
 # Powered by Seculayer © 2017 AI-TF Team
 from typing import Dict
 
-from dataanalyzer.util.XMLUtils import XMLUtils
+from xai.common.utils.XMLUtils import XMLUtils
 
 
 ######################################################################################
