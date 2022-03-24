@@ -4,6 +4,7 @@
 # Powered by Seculayer © 2021 Service Model Team, R&D Center.
 
 import paramiko
+from scp import SCPClient, SCPException
 from xai.common.crypto.AES256 import AES256
 from xai.common.sftp.PySFTPAuthException import PySFTPAuthException
 
@@ -21,12 +22,12 @@ class PySFTPClient(object):
     def open(self, filename, option="r", ) -> paramiko.SFTPFile:
         return self.sftp.open(filename, option)
 
-    def rename(self, src, dst) -> None:
-        self.sftp.rename(src, dst)
-
-    def close(self) -> None:
+    def close(self):
         self.sftp.close()
         self.transport.close()
+
+    def rename(self, src, dst) -> None:
+        self.sftp.rename(src, dst)
 
     def remove(self, filename) -> None:
         self.sftp.remove(filename)
@@ -37,6 +38,23 @@ class PySFTPClient(object):
             return True
         except FileNotFoundError:
             return False
+
+    def mkdirs(self, dir_path):
+        self.sftp.mkdir(dir_path)
+
+    def scp_to_storage(self, local_path, remote_path):
+        try:
+            with SCPClient(self.transport) as scp:
+                scp.put(local_path, remote_path, recursive=True, preserve_times=True)
+        except SCPException:
+            raise SCPException
+
+    def scp_from_storage(self, remote_path, local_path):
+        try:
+            with SCPClient(self.transport) as scp:
+                scp.get(remote_path, local_path, recursive=True)
+        except SCPException:
+            raise SCPException
 
 
 if __name__ == '__main__':

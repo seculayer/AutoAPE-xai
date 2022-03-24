@@ -20,6 +20,15 @@ class Constants(metaclass=Singleton):
     DIR_DATA_ROOT = _CONFIG.get("dir_data_root", "/eyeCloudAI/data")
     DIR_DIVISION_PATH = DIR_DATA_ROOT + "/processing/ape/division"
     DIR_JOB_PATH = DIR_DATA_ROOT + "/processing/ape/jobs"
+    DIR_STORAGE = DIR_DATA_ROOT + _CONFIG.get("dir_storage", "/storage/ape")
+    DIR_ML_TMP = DIR_DATA_ROOT + "/processing/ape/temp"
+    CUSTOM_PACK_NM = _CONFIG.get("user_custom_converter_package_nm", "cnvrtr")
+    DIR_RESOURCES = (
+        FileUtils.get_realpath(file=__file__)
+        + "/.."
+        + _CONFIG.get("dir_resources", "/resources")
+    )
+    DIR_RESOURCES_CNVRTR = DIR_RESOURCES + "/cnvrtr"
 
     # Logs
     DIR_LOG = _CONFIG.get("dir_log", "./logs")
@@ -33,7 +42,15 @@ class Constants(metaclass=Singleton):
     MRMS_SFTP_PORT = int(_CONFIG.get("mrms_sftp_port", "10022"))
     MRMS_REST_PORT = int(_CONFIG.get("mrms_rest_port", "9200"))
 
-    # STATUS
+    REST_URL_ROOT = "http://{}:{}".format(
+        MRMS_SVC, MRMS_REST_PORT
+    )
+
+    LIB_TYPE_TF = "TF"
+    LIB_TYPE_SKL = "SKL"
+
+    DATASET_FORMAT_TEXT = "1"
+    DATASET_FORMAT_IMAGE = "2"
 
 
 if __name__ == '__main__':

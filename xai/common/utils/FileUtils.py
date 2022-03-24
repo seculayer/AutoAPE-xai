@@ -16,3 +16,29 @@ class FileUtils(object):
     def mkdir(dir_name):
         if not os.path.exists(dir_name):
             os.makedirs(dir_name)
+
+    @staticmethod
+    def is_existed(dir_path):
+        return os.path.exists(dir_path)
+
+    @classmethod
+    def search_package(cls, dirname, exclude_list):
+        result_list = list()
+        try:
+            filenames = os.listdir(dirname)
+            for filename in filenames:
+                full_filename = os.path.join(dirname, filename)
+                if os.path.isdir(full_filename):
+                    result_list += cls.search_package(full_filename, exclude_list)
+                else:
+                    ext = os.path.splitext(full_filename)[-1]
+                    if ext == '.py' or ext == ".pyc":
+                        if dirname not in result_list and filename not in exclude_list:
+                            result_list.append(dirname)
+
+        except PermissionError:
+            pass
+
+    @staticmethod
+    def file_pointer(filename, mode):
+        return open(filename, mode, encoding='UTF-8', errors='ignore')
