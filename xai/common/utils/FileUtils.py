@@ -18,7 +18,7 @@ class FileUtils(object):
             os.makedirs(dir_name)
 
     @staticmethod
-    def is_existed(dir_path):
+    def is_exist(dir_path):
         return os.path.exists(dir_path)
 
     @classmethod

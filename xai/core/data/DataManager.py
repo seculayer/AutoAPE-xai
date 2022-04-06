@@ -35,8 +35,7 @@ class DataManager(object, metaclass=Singleton):
             self.LOGGER.info("DataManager Start.")
 
             # ---- data load
-            data_list = self.read_files(self.dataset_info.get_fields())
-            self.dataset = data_list
+            self.dataset = self.read_files(self.dataset_info.get_fields())
 
             self.LOGGER.info("DataManager End.")
         except Exception as e:

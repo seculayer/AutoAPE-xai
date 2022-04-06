@@ -5,6 +5,7 @@
 
 import re
 import urllib.parse as decode
+import numpy as np
 
 from xai.core.data.cnvrtr.ConvertAbstract import ConvertAbstract
 
@@ -40,7 +41,7 @@ class SpecialCharExtract(ConvertAbstract):
 
         result_len = len(result)
         # padding
-        if result_len < self.max_len :
+        if result_len < self.max_len:
             padding = [255.]*(self.max_len - result_len)
             result.extend(padding)
             return result
@@ -49,6 +50,42 @@ class SpecialCharExtract(ConvertAbstract):
 
     def get_num_feat(self):
         return self.max_len
+
+    def reverse(self, data):
+        rst_list = list()
+        for i in range(len(data)):
+            if type(data[i]) == float or type(data[i]) == int:
+                if data[i] == 255:
+                    rst_list.append(f"{i}_PADDING")
+                elif data[i] == 0:
+                    rst_list.append("NULL")
+                else:
+                    rst_list.append(chr(int(data[i])))
+
+        return rst_list
+
+    def get_original_idx(self, cvt_data, original_data):
+        rst_list = list()
+        find_from = 0
+        data = original_data.replace("\\/", "/")
+        for _ in range(5):
+            data = decode.unquote(data)
+
+        for token in self.reverse(cvt_data):
+            if token == "NULL":
+                token = chr(0)
+            s_idx = data.find(token, find_from)
+
+            if s_idx == -1:
+                if "PADDING" not in token:
+                    self.LOGGER.error(f"Can't find token : [{token}], original_data : [{data}]")
+                continue
+
+            e_idx = s_idx + len(token) - 1
+            rst_list.append([s_idx, e_idx])
+            find_from = e_idx + 1
+
+        return rst_list, data
 
 
 if __name__ == '__main__':

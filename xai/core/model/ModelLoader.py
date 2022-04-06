@@ -1,5 +1,6 @@
 from typing import Callable
 import joblib
+import tensorflow as tf
 
 from xai.common.Common import Common
 from xai.common.Constants import Constants
@@ -14,7 +15,7 @@ class ModelLoader(object):
     )
 
     @classmethod
-    def load(cls, lib_type, alg_cls, model_id):
+    def load(cls, lib_type, model_id):
         case_fn: Callable = {
             Constants.LIB_TYPE_TF: ModelLoader._get_tf_model,
             Constants.LIB_TYPE_SKL: ModelLoader._get_skl_model
@@ -24,29 +25,29 @@ class ModelLoader(object):
         dir_model = '{}/{}/0'.format(
             Constants.DIR_ML_TMP, model_id
         )
-        if FileUtils.is_existed(dir_model):
+        if FileUtils.is_exist(dir_model):
             try:
-                case_fn(alg_cls, dir_model)
-
                 cls.LOGGER.info("model load ....")
                 cls.LOGGER.info("model dir : {}".format(dir_model))
+
+                return case_fn(dir_model)
             except Exception as e:
                 cls.LOGGER.error(e, exc_info=True)
         else:
             cls.LOGGER.warn("MODEL FILE IS NOT EXIST : [{}]".format(dir_model))
 
     @classmethod
-    def _get_tf_model(cls, alg_cls, dir_model):
+    def _get_tf_model(cls, dir_model):
         try:
-            alg_cls.model.load_weights(dir_model + '/weights.h5')
+            return tf.keras.models.load_model(dir_model)
         except Exception as e:
             cls.LOGGER.error(e, exc_info=True)
             raise e
 
     @classmethod
-    def _get_skl_model(cls, alg_cls, dir_model):
+    def _get_skl_model(cls, dir_model):
         try:
-            joblib.dump(alg_cls.model, "{}/skl_model.pkl".format(dir_model))
+            return joblib.load("{}/skl_model.joblib".format(dir_model))
         except Exception as e:
             cls.LOGGER.error(e, exc_info=True)
             raise e
@@ -59,4 +60,4 @@ class ModelLoader(object):
                 remote_path, Constants.DIR_ML_TMP
             )
         except Exception as e:
-            pass
+            cls.LOGGER.error(e, exc_info=True)

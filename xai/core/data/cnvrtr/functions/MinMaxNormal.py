@@ -47,6 +47,27 @@ class MinMaxNormal(ConvertAbstract):
 
         return result
 
+    def reverse(self, data):
+        result = None
+        norm = self.max - self.min
+        # zero-division protection
+        if norm == 0:
+            # self.LOGGER.warn("Min val is same Max val (Min val == Max val)")
+            norm = 1
+
+        try:
+            temp_result = np.array(data, dtype=np.float)
+            temp_result: np.array = temp_result * norm + self.min
+            result = temp_result.tolist()
+        except Exception as e:
+            if not self.error_log_flag:
+                # print log for error
+                self.LOGGER.error("[MinMaxNormal] Convert error !!! self.min : {}, self.max : {}, data : {}".format(self.min, self.max, data))
+                self.LOGGER.error(e, exc_info=True)
+                self.error_log_flag = True
+
+        return result
+
 
 if __name__ == '__main__':
     minmax_normalization = MinMaxNormal(

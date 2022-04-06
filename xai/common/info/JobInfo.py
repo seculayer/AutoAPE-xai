@@ -101,11 +101,26 @@ class JobInfo(object, metaclass=Singleton):
     def get_dataset_format(self) -> str:
         return self.info_dict.get("dataset_format")
 
+    def get_xai_alg(self):
+        # TODO : 알고리즘 추가시 분기점
+        return Constants.XAI_ALG_LIME
+
+    def get_lib_type(self):
+        return {
+            "2": Constants.LIB_TYPE_TF,
+            "4": Constants.LIB_TYPE_GS,
+            "5": Constants.LIB_TYPE_SKL
+        }.get(self.info_dict.get("algorithms", {}).get("lib_type", "2"))
+
+    def get_model_id(self):
+        return self.info_dict.get("learn_hist_no", None)
+
 
 class JobInfoBuilder(object):
     def __init__(self):
         self.job_type = None
         self.hist_no = None
+        self.job_type = None
         self.task_idx = None
         self.job_dir = None
         self.logger = logging.getLogger()
@@ -117,6 +132,10 @@ class JobInfoBuilder(object):
 
     def set_job_dir(self, job_dir):
         self.job_dir = job_dir
+        return self
+
+    def set_job_type(self, job_type):
+        self.job_type = job_type
         return self
 
     def set_task_idx(self, task_idx):

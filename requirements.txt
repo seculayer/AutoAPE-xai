@@ -7,3 +7,6 @@ pycryptodome == 3.11.0
 requests == 2.26.0
 opencv-python-headless >= 4.5.4.60
 scp == 0.14.2
+lime==0.2.0.1
+matplotlib==3.2.0
+scikit-image==0.19.2

@@ -51,6 +51,12 @@ class ConvertAbstract(object):
     def get_num_feat(self):
         return self.num_feat
 
+    def reverse(self, data):
+        raise NotImplementedError
+
+    def get_original_idx(self, cvt_data, original_data):
+        raise NotImplementedError
+
     @staticmethod
     def _isBlank(_str):
         return not (_str and _str.strip())
