@@ -3,10 +3,10 @@
 # e-mail : jin.kim@seculayer.com
 # Powered by Seculayer © 2021 Service Model Team, R&D Center.
 
-from xai.common.Singleton import Singleton
-from xai.common.utils.ConfigUtils import ConfigUtils
-from xai.common.utils.FileUtils import FileUtils
-from xai.tools.VersionManagement import VersionManagement
+from pycmmn.Singleton import Singleton
+from pycmmn.utils.ConfUtils import ConfUtils
+from pycmmn.utils.FileUtils import FileUtils
+from pycmmn.tools.VersionManagement import VersionManagement
 
 import os
 
@@ -30,7 +30,7 @@ class Constants(metaclass=Singleton):
         _conf_xml_filename = _working_dir + "/conf/xai-conf.xml"
 
     # load config xml file
-    _CONFIG = ConfigUtils.load(filename=os.getcwd() + "/conf/xai-conf.xml")
+    _CONFIG = ConfUtils.load(filename=os.getcwd() + "/conf/xai-conf.xml")
 
     try:
         VERSION_MANAGER = VersionManagement(app_path=_working_dir)
@@ -48,17 +48,12 @@ class Constants(metaclass=Singleton):
     # Directories
     DIR_DATA_ROOT = _CONFIG.get("dir_data_root", "/eyeCloudAI/data")
     DIR_PROCESSING = DIR_DATA_ROOT + _CONFIG.get("dir_processing", "/processing/ape")
-    DIR_DIVISION = DIR_PROCESSING + "/division"
     DIR_JOB = DIR_PROCESSING + _CONFIG.get("dir_job", "/jobs")
     DIR_STORAGE = DIR_DATA_ROOT + _CONFIG.get("dir_storage", "/storage/ape")
-    DIR_ML_TMP = DIR_DATA_ROOT + "/processing/ape/temp"
-    CUSTOM_PACK_NM = _CONFIG.get("user_custom_converter_package_nm", "cnvrtr")
+    DIR_TEMP = DIR_DATA_ROOT + "/processing/ape/temp"
     DIR_RESOURCES = (
-        FileUtils.get_realpath(file=__file__)
-        + "/.."
-        + _CONFIG.get("dir_resources", "/resources")
+        FileUtils.get_realpath(file=__file__) + "/resources"
     )
-    DIR_RESOURCES_CNVRTR = DIR_RESOURCES + "/cnvrtr"
     DIR_RESULT = DIR_PROCESSING + _CONFIG.get("dir_result", "/results_temp")
 
     # Logs
@@ -94,4 +89,3 @@ class Constants(metaclass=Singleton):
 
 if __name__ == '__main__':
     print(Constants.DIR_DATA_ROOT)
-

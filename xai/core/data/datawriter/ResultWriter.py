@@ -7,8 +7,8 @@ import os
 import json
 import socket
 
-from xai.common.utils.Utils import Utils
-from xai.common.utils.FileUtils import FileUtils
+from pycmmn.utils.Utils import Utils
+from pycmmn.utils.FileUtils import FileUtils
 ######################################################################################
 
 

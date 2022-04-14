@@ -4,14 +4,15 @@ import tensorflow as tf
 
 from xai.common.Common import Common
 from xai.common.Constants import Constants
-from xai.core.SFTPClientManager import SFTPClientManager
-from xai.common.utils.FileUtils import FileUtils
+from pycmmn.sftp.SFTPClientManager import SFTPClientManager
+from pycmmn.utils.FileUtils import FileUtils
 
 
 class ModelLoader(object):
-    LOGGER = Common.LOGGER.get_logger()
+    LOGGER = Common.LOGGER.getLogger()
     MRMS_SFTP_MANAGER: SFTPClientManager = SFTPClientManager(
-        "{}:{}".format(Constants.MRMS_SVC, Constants.MRMS_SFTP_PORT), Constants.MRMS_USER, Constants.MRMS_PASSWD
+        "{}:{}".format(Constants.MRMS_SVC, Constants.MRMS_SFTP_PORT),
+        Constants.MRMS_USER, Constants.MRMS_PASSWD, LOGGER
     )
 
     @classmethod
@@ -23,7 +24,7 @@ class ModelLoader(object):
 
         ModelLoader._scp_model_from_storage(model_id)
         dir_model = '{}/{}/0'.format(
-            Constants.DIR_ML_TMP, model_id
+            Constants.DIR_TEMP, model_id
         )
         if FileUtils.is_exist(dir_model):
             try:
@@ -57,7 +58,7 @@ class ModelLoader(object):
         remote_path = f"{Constants.DIR_STORAGE}/{model_id}"
         try:
             cls.MRMS_SFTP_MANAGER.scp_from_storage(
-                remote_path, Constants.DIR_ML_TMP
+                remote_path, Constants.DIR_TEMP
             )
         except Exception as e:
             cls.LOGGER.error(e, exc_info=True)

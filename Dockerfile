@@ -1,16 +1,10 @@
 FROM registry.seculayer.com:31500/ape/python-base:py3.7 as builder
 ARG app="/opt/app"
 
-RUN sudo apt-get install -y build-essential cmake git pkg-config libgtk-3-dev \
-        libavcodec-dev libavformat-dev libswscale-dev libv4l-dev \
-        libxvidcore-dev libx264-dev libjpeg-dev libpng-dev libtiff-dev \
-        gfortran openexr libatlas-base-dev \
-        libtbb2 libtbb-dev libdc1394-22-dev
 RUN mkdir -p $app
 WORKDIR $app
 
 COPY ./requirements.txt ./requirements.txt
-RUN pip3.7 install --upgrade pip setuptools wheel
 RUN pip3.7 install -r ./requirements.txt -t $app/lib
 
 COPY ./xai ./xai

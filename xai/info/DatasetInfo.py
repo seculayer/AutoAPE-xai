@@ -5,7 +5,7 @@
 
 from typing import List, Dict
 
-from xai.common.info.FieldInfo import FieldInfo
+from xai.info.FieldInfo import FieldInfo
 
 
 class DatasetInfo(object):

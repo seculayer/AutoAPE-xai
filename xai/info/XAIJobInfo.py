@@ -5,15 +5,15 @@
 
 import logging
 
-from xai.common.Singleton import Singleton
+from pycmmn.Singleton import Singleton
 from xai.common.Constants import Constants
-from xai.common.exceptions.JobFileLoadError import JobFileLoadError
-from xai.common.info.DatasetInfo import DatasetInfo
-from xai.core.SFTPClientManager import SFTPClientManager
-from xai.common.utils.StringUtil import StringUtil
+from pycmmn.exceptions.JobFileLoadError import JobFileLoadError
+from xai.info.DatasetInfo import DatasetInfo
+from pycmmn.sftp.SFTPClientManager import SFTPClientManager
+from pycmmn.utils.StringUtil import StringUtil
 
 
-class JobInfo(object, metaclass=Singleton):
+class XAIJobInfo(object, metaclass=Singleton):
     def __init__(self, hist_no, task_idx, job_type, job_dir, logger, sftp_client):
         self.job_type: str = job_type
         self.hist_no: str = hist_no
@@ -116,7 +116,7 @@ class JobInfo(object, metaclass=Singleton):
         return self.info_dict.get("learn_hist_no", None)
 
 
-class JobInfoBuilder(object):
+class XAIJobInfoBuilder(object):
     def __init__(self):
         self.job_type = None
         self.hist_no = None
@@ -150,8 +150,8 @@ class JobInfoBuilder(object):
         self.sftp_client = sftp_client
         return self
 
-    def build(self) -> JobInfo:
-        return JobInfo(
+    def build(self) -> XAIJobInfo:
+        return XAIJobInfo(
             hist_no=self.hist_no, task_idx=self.task_idx,
             job_type=self.job_type, job_dir=self.job_dir,
             logger=self.logger, sftp_client=self.sftp_client

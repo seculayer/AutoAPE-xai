@@ -6,7 +6,7 @@
 from typing import List
 
 from xai.common.Constants import Constants
-from xai.core.data.cnvrtr.ConvertAbstract import ConvertAbstract
+from dataconverter.core.ConvertAbstract import ConvertAbstract
 from xai.core.data.dataloader.DataLoaderAbstract import DataLoaderAbstract
 
 
