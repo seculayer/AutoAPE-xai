@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.3
-FROM registry.seculayer.com:31500/ape/python-base:py3.7 as builder
+FROM registry.seculayer.com:31500/ape/python-base-gpu:py3.7 as builder
 
 ARG app="/opt/app"
 
@@ -34,7 +34,7 @@ WORKDIR $app/xai
 RUN pip3.7 install -r requirements.txt -t $app/xai/lib && python3.7 setup.py bdist_wheel
 
 
-FROM registry.seculayer.com:31500/ape/python-base:py3.7 as app
+FROM registry.seculayer.com:31500/ape/python-base-gpu:py3.7 as app
 
 ARG app="/opt/app"
 ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8
