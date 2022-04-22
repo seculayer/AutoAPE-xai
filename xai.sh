@@ -8,12 +8,12 @@
 
 APP_PATH=/eyeCloudAI/app/ape
 
-XAI_LIB_PATH=$APP_PATH/xai/lib
-XAI_PATH=$APP_PATH/xai
-####
 export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
 export CUDA_HOME=/usr/local/cuda
-export PYTHONPATH=$XAI_LIB_PATH:$XAI_PATH
+export PYTHONPATH=$PYTHONPATH:$APP_PATH/xai/lib:$APP_PATH/xai
+export PYTHONPATH=$PYTHONPATH:$APP_PATH/pycmmn/lib:$APP_PATH/pycmmn
+export PYTHONPATH=$PYTHONPATH:$APP_PATH/apeflow/lib:$APP_PATH/apeflow
+export PYTHONPATH=$PYTHONPATH:$APP_PATH/dataconverter/lib:$APP_PATH/dataconverter
 
 KEY=${1}
 WORKER_IDX=${2}

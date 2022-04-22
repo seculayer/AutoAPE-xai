@@ -3,10 +3,12 @@
 # e-mail : jin.kim@seculayer.com
 # Powered by Seculayer © 2021 Service Model Team, R&D Center.
 
+import json
+
 # ---- automl packages
-from xai.common.Singleton import Singleton
-from xai.common.logger.MPLogger import MPLogger
-from xai.common.utils.FileUtils import FileUtils
+from pycmmn.Singleton import Singleton
+from pycmmn.logger.MPLogger import MPLogger
+from pycmmn.utils.FileUtils import FileUtils
 from xai.common.Constants import Constants
 
 
