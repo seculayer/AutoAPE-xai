@@ -6,9 +6,8 @@
 import re
 from typing import List
 
-from xai.common.utils.StringUtil import StringUtil
-from xai.common.info.ConvertFunctionInfo import ConvertFunctionInfo
-from xai.common.info.ConvertFunctionInfo import ConvertFunctionInfoBuilder
+from pycmmn.utils.StringUtil import StringUtil
+from dataconverter.core.ConvertFunctionInfo import ConvertFunctionInfo, ConvertFunctionInfoBuilder
 
 
 class FieldInfo(object):

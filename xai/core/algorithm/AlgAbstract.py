@@ -8,15 +8,15 @@ import numpy as np
 
 from xai.common.Common import Common
 from xai.common.Constants import Constants
-from xai.common.info.JobInfo import JobInfo
-from xai.core.data.cnvrtr.ConvertAbstract import ConvertAbstract
+from xai.info.XAIJobInfo import XAIJobInfo
+from dataconverter.core.ConvertAbstract import ConvertAbstract
 from xai.core.data.dataloader.DataLoaderAbstract import DataLoaderAbstract
 
 
 class AlgAbstract(object):
-    LOGGER = Common.LOGGER.get_logger()
+    LOGGER = Common.LOGGER.getLogger()
 
-    def __init__(self, model, job_info: JobInfo):
+    def __init__(self, model, job_info: XAIJobInfo):
         self.model = model
         self.job_info = job_info
         self.functions: List[List[ConvertAbstract]] = DataLoaderAbstract.build_functions(

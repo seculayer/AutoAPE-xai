@@ -11,8 +11,8 @@ from typing import List, Dict
 
 from xai.common.Common import Common
 from xai.common.Constants import Constants
-from xai.common.info.JobInfo import JobInfo, JobInfoBuilder
-from xai.core.SFTPClientManager import SFTPClientManager
+from xai.info.XAIJobInfo import XAIJobInfo, XAIJobInfoBuilder
+from pycmmn.sftp.SFTPClientManager import SFTPClientManager
 from xai.core.data.DataManager import DataManager, DataManagerBuilder
 from xai.core.model.ModelLoader import ModelLoader
 from xai.core.algorithm.Lime import Lime
@@ -20,13 +20,15 @@ from xai.core.data.datawriter.ResultWriter import ResultWriter
 
 
 class XAIProcessor(object):
-    LOGGER = Common.LOGGER.get_logger()
+    LOGGER = Common.LOGGER.getLogger()
 
     def __init__(self, hist_no: str, task_idx: str, job_type: str) -> None:
         self.mrms_sftp_manager: SFTPClientManager = SFTPClientManager(
-            "{}:{}".format(Constants.MRMS_SVC, Constants.MRMS_SFTP_PORT), Constants.MRMS_USER, Constants.MRMS_PASSWD)
+            "{}:{}".format(Constants.MRMS_SVC, Constants.MRMS_SFTP_PORT),
+            Constants.MRMS_USER, Constants.MRMS_PASSWD, self.LOGGER
+        )
 
-        self.job_info: JobInfo = JobInfoBuilder() \
+        self.job_info: XAIJobInfo = XAIJobInfoBuilder() \
             .set_hist_no(hist_no=hist_no) \
             .set_task_idx(task_idx) \
             .set_job_dir(Constants.DIR_JOB) \

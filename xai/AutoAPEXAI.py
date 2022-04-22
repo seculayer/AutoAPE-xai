@@ -9,7 +9,7 @@ from xai.core.XAIProcessor import XAIProcessor
 
 
 class AutoAPEXAI(object):
-    LOGGER = Common.LOGGER.get_logger()
+    LOGGER = Common.LOGGER.getLogger()
 
     def __init__(self, key, task_idx):
         self.key: str = key

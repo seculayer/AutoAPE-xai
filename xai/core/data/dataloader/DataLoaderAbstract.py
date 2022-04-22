@@ -7,16 +7,18 @@ from typing import Tuple, List
 import numpy as np
 import json
 
+from pycmmn.rest.RestManager import RestManager
 from xai.common.Common import Common
-from xai.common.info.FieldInfo import FieldInfo
-from xai.core.data.cnvrtr.ConvertAbstract import ConvertAbstract
-from xai.core.data.cnvrtr.ConvertFactory import ConvertFactory
+from xai.common.Constants import Constants
+from xai.info.FieldInfo import FieldInfo
+from dataconverter.core.ConvertAbstract import ConvertAbstract
+from dataconverter.core.ConvertFactory import ConvertFactory
 
 
 class DataLoaderAbstract(object):
+    LOGGER = Common.LOGGER.getLogger()
 
     def __init__(self, job_info, sftp_client):
-        self.LOGGER = Common.LOGGER.get_logger()
         self.job_info = job_info
         self.sftp_client = sftp_client
 
@@ -47,13 +49,19 @@ class DataLoaderAbstract(object):
                     features += value
         return features, labels, line
 
-    @staticmethod
-    def build_functions(fields: List[FieldInfo]) -> List[List[ConvertAbstract]]:
+    @classmethod
+    def build_functions(cls, fields: List[FieldInfo]) -> List[List[ConvertAbstract]]:
         functions: List[List[ConvertAbstract]] = list()
         for field in fields:
             cvt_fn_list: List[ConvertAbstract] = list()
             for fn_info in field.get_function():
-                cvt_fn_list.append(ConvertFactory.create_cvt_fn(fn_info))
+                cvt_fn_list.append(ConvertFactory.create_cvt_fn(
+                    cvt_fn_info=fn_info,
+                    logger=cls.LOGGER,
+                    cvt_dict=RestManager.get_cnvr_dict(
+                        rest_url_root=Constants.REST_URL_ROOT, logger=cls.LOGGER
+                    )
+                ))
             functions.append(cvt_fn_list)
         return functions
 
@@ -100,4 +108,3 @@ class DataLoaderAbstract(object):
 
     def read(self, file_list: List[str], fields: List[FieldInfo]) -> List:
         raise NotImplementedError
-

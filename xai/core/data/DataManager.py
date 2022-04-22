@@ -6,30 +6,30 @@
 from multiprocessing import Queue
 from typing import List
 
-from xai.common.Singleton import Singleton
-from xai.common.info.JobInfo import JobInfo
-from xai.common.info.FieldInfo import FieldInfo
+from pycmmn.Singleton import Singleton
+from xai.info.XAIJobInfo import XAIJobInfo
+from xai.info.FieldInfo import FieldInfo
 
 from xai.common.Common import Common
-from xai.common.decorator.CalTimeDecorator import CalTimeDecorator
-from xai.common.info.DatasetInfo import DatasetInfo
-from xai.core.SFTPClientManager import SFTPClientManager
+from pycmmn.decorator.CalTimeDecorator import CalTimeDecorator
+from xai.info import DatasetInfo
+from pycmmn.sftp.SFTPClientManager import SFTPClientManager
 from xai.core.data.DataLoaderFactory import DataloaderFactory
 
 
 class DataManager(object, metaclass=Singleton):
+    LOGGER = Common.LOGGER.getLogger()
 
-    def __init__(self, job_info: JobInfo, sftp_client: SFTPClientManager) -> None:
+    def __init__(self, job_info: XAIJobInfo, sftp_client: SFTPClientManager) -> None:
         # threading.Thread.__init__(self)
-        self.LOGGER = Common.LOGGER.get_logger()
-        self.job_info: JobInfo = job_info
+        self.job_info: XAIJobInfo = job_info
         self.data_queue: Queue = Queue()
         self.sftp_client = sftp_client
 
         self.dataset_info: DatasetInfo = self.job_info.get_dataset_info()
         self.dataset = {}
 
-    @CalTimeDecorator("Data Manager")
+    @CalTimeDecorator("Data Manager", LOGGER)
     def run(self) -> None:
         try:
             self.LOGGER.info("DataManager Start.")

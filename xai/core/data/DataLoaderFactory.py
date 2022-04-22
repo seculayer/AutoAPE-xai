@@ -5,17 +5,17 @@
 
 from xai.common.Common import Common
 from xai.common.Constants import Constants
-from xai.core.data.dataloader.DataLoaderText import DataLoaderText
+from pycmmn.sftp.SFTPClientManager import SFTPClientManager
+from xai.info.XAIJobInfo import XAIJobInfo
 from xai.core.data.dataloader.DataLoaderImage import DataLoaderImage
-from xai.core.SFTPClientManager import SFTPClientManager
-from xai.common.info.JobInfo import JobInfo
+from xai.core.data.dataloader.DataLoaderText import DataLoaderText
 
 
 class DataloaderFactory(object):
-    LOGGER = Common.LOGGER.get_logger()
+    LOGGER = Common.LOGGER.getLogger()
 
     @staticmethod
-    def create(dataset_format: str, job_info: JobInfo, sftp_client: SFTPClientManager):
+    def create(dataset_format: str, job_info: XAIJobInfo, sftp_client: SFTPClientManager):
         case = {
             Constants.DATASET_FORMAT_TEXT: "DataLoaderText",
             Constants.DATASET_FORMAT_IMAGE: "DataLoaderImage"

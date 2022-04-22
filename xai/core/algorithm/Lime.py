@@ -10,12 +10,12 @@ import numpy as np
 from datetime import datetime
 
 from xai.common.Constants import Constants
-from xai.common.info.JobInfo import JobInfo
+from xai.info.XAIJobInfo import XAIJobInfo
 from xai.core.algorithm.AlgAbstract import AlgAbstract
 
 
 class Lime(AlgAbstract):
-    def __init__(self, model, job_info: JobInfo):
+    def __init__(self, model, job_info: XAIJobInfo):
         super().__init__(model, job_info)
         self.data_type = self.job_info.get_dataset_format()
         if self.job_info.get_lib_type() == Constants.LIB_TYPE_TF:
