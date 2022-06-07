@@ -24,7 +24,9 @@ RUN pip3.7 install -r requirements.txt -t $app/dataconverter/lib && python3.7 se
 RUN --mount=type=secret,id=token git clone --depth=5 -c http.extraHeader="Authorization: Bearer $(cat /run/secrets/token)" --single-branch -b SLCAI-54-automl-module https://ssdlc-bitbucket.seculayer.com:8443/scm/slaism/autoape-apeflow.git $app/apeflow
 #RUN --mount=type=secret,id=token git clone --depth=5 -c http.extraHeader="Authorization: Bearer $(cat /run/secrets/token)" https://ssdlc-bitbucket.seculayer.com:8443/scm/slaism/autoape-apeflow.git $app/apeflow
 WORKDIR $app/apeflow
-RUN pip3.7 install -r requirements.txt -t $app/apeflow/lib && python3.7 setup.py bdist_wheel
+RUN pip3.7 install -r requirements.txt -t $app/apeflow/lib
+RUN pip3.7 install protobuf==3.20.0 -t $app/apeflow/lib --force-reinstall
+RUN python3.7 setup.py bdist_wheel
 
 # xai setup
 # specific branch
