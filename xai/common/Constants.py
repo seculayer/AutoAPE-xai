@@ -54,7 +54,7 @@ class Constants(metaclass=Singleton):
     DIR_RESOURCES = (
         FileUtils.get_realpath(file=__file__) + "/resources"
     )
-    DIR_RESULT = DIR_PROCESSING + _CONFIG.get("dir_result", "/results_temp")
+    DIR_RESULT = DIR_PROCESSING + _CONFIG.get("dir_result", "/results_xai")
 
     # Logs
     DIR_LOG = _CONFIG.get("dir_log", "./logs")
