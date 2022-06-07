@@ -99,6 +99,7 @@ class XAIProcessor(object):
                 jsonline[key] = result_dict_list[line_idx][key]
             jsonline["eqp_dt"] = curr_time
             jsonline["xai_hist_no"] = self.job_key
+            jsonline["infr_hist_no"] = self.job_info.get_infr_hist_no()
             json_data[line_idx] = jsonline
 
         return json_data

@@ -115,6 +115,9 @@ class XAIJobInfo(object, metaclass=Singleton):
     def get_model_id(self):
         return self.info_dict.get("learn_hist_no", None)
 
+    def get_infr_hist_no(self):
+        return self.info_dict.get("infr_hist_no", None)
+
 
 class XAIJobInfoBuilder(object):
     def __init__(self):
