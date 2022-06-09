@@ -37,7 +37,7 @@ class AlgAbstract(object):
             batch_x = x[start: end]
             try:
                 # case tensorflow
-                tmp_results = self.model.predict(batch_x).numpy()
+                tmp_results = self.model.predict(batch_x)
                 tmp_results = np.argmax(tmp_results, axis=1)
             except:
                 # case sklearn
