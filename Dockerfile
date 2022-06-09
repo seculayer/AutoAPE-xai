@@ -7,22 +7,22 @@ RUN pip3.7 install wheel && git config --global http.sslVerify false
 
 # pycmmn setup
 # specific branch
-RUN --mount=type=secret,id=token git clone --depth=5 -c http.extraHeader="Authorization: Bearer $(cat /run/secrets/token)" --single-branch -b SLCAI-54-automl-module https://ssdlc-bitbucket.seculayer.com:8443/scm/slaism/autoape-pycmmn.git $app/pycmmn
-#RUN --mount=type=secret,id=token git clone --depth=5 -c http.extraHeader="Authorization: Bearer $(cat /run/secrets/token)" https://ssdlc-bitbucket.seculayer.com:8443/scm/slaism/autoape-pycmmn.git $app/pycmmn
+#RUN --mount=type=secret,id=token git clone --depth=5 -c http.extraHeader="Authorization: Bearer $(cat /run/secrets/token)" --single-branch -b SLCAI-54-automl-module https://ssdlc-bitbucket.seculayer.com:8443/scm/slaism/autoape-pycmmn.git $app/pycmmn
+RUN --mount=type=secret,id=token git clone --depth=5 -c http.extraHeader="Authorization: Bearer $(cat /run/secrets/token)" https://ssdlc-bitbucket.seculayer.com:8443/scm/slaism/autoape-pycmmn.git $app/pycmmn
 WORKDIR $app/pycmmn
 RUN pip3.7 install -r requirements.txt -t $app/pycmmn/lib && python3.7 setup.py bdist_wheel
 
 # dataconverter setup
 # specific branch
-RUN --mount=type=secret,id=token git clone --depth=5 -c http.extraHeader="Authorization: Bearer $(cat /run/secrets/token)" --single-branch -b SLCAI-54-automl-module https://ssdlc-bitbucket.seculayer.com:8443/scm/slaism/autoape-dataconverter.git $app/dataconverter
-#RUN --mount=type=secret,id=token git clone --depth=5 -c http.extraHeader="Authorization: Bearer $(cat /run/secrets/token)" https://ssdlc-bitbucket.seculayer.com:8443/scm/slaism/autoape-dataconverter.git $app/dataconverter
+#RUN --mount=type=secret,id=token git clone --depth=5 -c http.extraHeader="Authorization: Bearer $(cat /run/secrets/token)" --single-branch -b SLCAI-54-automl-module https://ssdlc-bitbucket.seculayer.com:8443/scm/slaism/autoape-dataconverter.git $app/dataconverter
+RUN --mount=type=secret,id=token git clone --depth=5 -c http.extraHeader="Authorization: Bearer $(cat /run/secrets/token)" https://ssdlc-bitbucket.seculayer.com:8443/scm/slaism/autoape-dataconverter.git $app/dataconverter
 WORKDIR $app/dataconverter
 RUN pip3.7 install -r requirements.txt -t $app/dataconverter/lib && python3.7 setup.py bdist_wheel
 
 # apeflow setup
 # specific branch
-RUN --mount=type=secret,id=token git clone --depth=5 -c http.extraHeader="Authorization: Bearer $(cat /run/secrets/token)" --single-branch -b SLCAI-54-automl-module https://ssdlc-bitbucket.seculayer.com:8443/scm/slaism/autoape-apeflow.git $app/apeflow
-#RUN --mount=type=secret,id=token git clone --depth=5 -c http.extraHeader="Authorization: Bearer $(cat /run/secrets/token)" https://ssdlc-bitbucket.seculayer.com:8443/scm/slaism/autoape-apeflow.git $app/apeflow
+#RUN --mount=type=secret,id=token git clone --depth=5 -c http.extraHeader="Authorization: Bearer $(cat /run/secrets/token)" --single-branch -b SLCAI-54-automl-module https://ssdlc-bitbucket.seculayer.com:8443/scm/slaism/autoape-apeflow.git $app/apeflow
+RUN --mount=type=secret,id=token git clone --depth=5 -c http.extraHeader="Authorization: Bearer $(cat /run/secrets/token)" https://ssdlc-bitbucket.seculayer.com:8443/scm/slaism/autoape-apeflow.git $app/apeflow
 WORKDIR $app/apeflow
 RUN pip3.7 install -r requirements.txt -t $app/apeflow/lib
 RUN pip3.7 install protobuf==3.20.0 -t $app/apeflow/lib --force-reinstall
@@ -30,8 +30,8 @@ RUN python3.7 setup.py bdist_wheel
 
 # xai setup
 # specific branch
-RUN --mount=type=secret,id=token git clone --depth=5 -c http.extraHeader="Authorization: Bearer $(cat /run/secrets/token)" --single-branch -b SLCAI-54-automl-module https://ssdlc-bitbucket.seculayer.com:8443/scm/slaism/autoape-xai.git $app/xai
-#RUN --mount=type=secret,id=token git clone --depth=5 -c http.extraHeader="Authorization: Bearer $(cat /run/secrets/token)" https://ssdlc-bitbucket.seculayer.com:8443/scm/slaism/autoape-xai.git $app/xai
+#RUN --mount=type=secret,id=token git clone --depth=5 -c http.extraHeader="Authorization: Bearer $(cat /run/secrets/token)" --single-branch -b SLCAI-54-automl-module https://ssdlc-bitbucket.seculayer.com:8443/scm/slaism/autoape-xai.git $app/xai
+RUN --mount=type=secret,id=token git clone --depth=5 -c http.extraHeader="Authorization: Bearer $(cat /run/secrets/token)" https://ssdlc-bitbucket.seculayer.com:8443/scm/slaism/autoape-xai.git $app/xai
 WORKDIR $app/xai
 RUN pip3.7 install -r requirements.txt -t $app/xai/lib && python3.7 setup.py bdist_wheel
 
