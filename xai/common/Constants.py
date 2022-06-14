@@ -84,6 +84,9 @@ class Constants(metaclass=Singleton):
     XAI_ALG_GRAD_SCAM = "gram_scam"
     XAI_ALG_LIME = "lime"
 
+    STATUS_XAI_COMPLETE = "6"
+    STATUS_XAI_ERROR = "7"
+
     BATCH_SIZE = int(_CONFIG.get("inference_batch_size", "512"))
 
 

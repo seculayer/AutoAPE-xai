@@ -9,6 +9,7 @@ from typing import Dict, Callable, List
 import numpy as np
 from datetime import datetime
 
+from pycmmn.rest.RestManager import RestManager
 from xai.common.Constants import Constants
 from xai.info.XAIJobInfo import XAIJobInfo
 from xai.core.algorithm.AlgAbstract import AlgAbstract
@@ -42,10 +43,6 @@ class Lime(AlgAbstract):
         total_start_time = datetime.now()
         for idx, line in enumerate(x):
             loop_start_time = datetime.now()
-            # 진행률 표시
-            if int((idx + 1) / len(x) * 100) > progress_pct:
-                progress_pct = int((idx + 1) / len(x) * 100)
-                self.LOGGER.info(f"{(idx + 1) / len(x) * 100} % completed...")
 
             try:
                 case: Callable = {
@@ -61,10 +58,24 @@ class Lime(AlgAbstract):
                 self.LOGGER.error(e, exc_info=True)
                 self.LOGGER.error(f"idx : {idx}, data : {line}")
 
+            # 진행률 표시
+            if int((idx + 1) / len(x) * 100) > progress_pct:
+                progress_pct_float = (idx + 1) / len(x) * 100
+                progress_pct = int(progress_pct_float)
+                self.LOGGER.info(f"{progress_pct_float} % completed...")
+
+                RestManager.send_xai_progress(
+                    Constants.REST_URL_ROOT, self.LOGGER, self.job_info.get_hist_no(), progress_pct_float
+                )
+
             self.LOGGER.info(f"Line [{idx}] is finished..")
             self.LOGGER.info(f"Loop excution time : [{datetime.now() - loop_start_time}]")
 
         self.LOGGER.info(f"Total excution time : [{datetime.now() - total_start_time}]")
+
+        RestManager.send_xai_progress(
+            Constants.REST_URL_ROOT, self.LOGGER, self.job_info.get_hist_no(), 100.0, "delete"
+        )
 
         return result_list
 

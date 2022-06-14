@@ -14,7 +14,6 @@ export PYTHONPATH=$PYTHONPATH:$APP_PATH/xai/lib:$APP_PATH/xai
 export PYTHONPATH=$PYTHONPATH:$APP_PATH/pycmmn/lib:$APP_PATH/pycmmn
 export PYTHONPATH=$PYTHONPATH:$APP_PATH/apeflow/lib:$APP_PATH/apeflow
 export PYTHONPATH=$PYTHONPATH:$APP_PATH/dataconverter/lib:$APP_PATH/dataconverter
-export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 
 KEY=${1}
 WORKER_IDX=${2}

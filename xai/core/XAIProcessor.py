@@ -9,10 +9,11 @@ import os
 import tensorflow as tf
 from typing import List, Dict
 
+from pycmmn.sftp.SFTPClientManager import SFTPClientManager
+from pycmmn.rest.RestManager import RestManager
 from xai.common.Common import Common
 from xai.common.Constants import Constants
 from xai.info.XAIJobInfo import XAIJobInfo, XAIJobInfoBuilder
-from pycmmn.sftp.SFTPClientManager import SFTPClientManager
 from xai.core.data.DataManager import DataManager, DataManagerBuilder
 from xai.core.model.ModelLoader import ModelLoader
 from xai.core.algorithm.Lime import Lime
@@ -64,10 +65,24 @@ class XAIProcessor(object):
             result: list = self.xai_cls.run(data, json_data)
             self.result_write(result)
 
+            RestManager.update_xai_status_cd(
+                Constants.REST_URL_ROOT,
+                self.LOGGER,
+                Constants.STATUS_XAI_COMPLETE,
+                self.job_info.get_hist_no(),
+                "0", "-"
+            )
             self.LOGGER.info("-- XAI end. [{}]".format(self.job_key))
 
         except Exception as e:
             self.LOGGER.error(e, exc_info=True)
+            RestManager.update_xai_status_cd(
+                Constants.REST_URL_ROOT,
+                self.LOGGER,
+                Constants.STATUS_XAI_ERROR,
+                self.job_info.get_hist_no(),
+                "0", "-"
+            )
 
     def set_xai_cls(self):
         return {
