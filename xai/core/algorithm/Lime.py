@@ -54,21 +54,22 @@ class Lime(AlgAbstract):
 
                 result_list.append(line_rst_dict)
 
+                self.LOGGER.info(f"Line [{idx}] is finished..")
+
+                # 진행률 표시
+                progress_pct = (idx + 1) / len(x) * 100
+                self.LOGGER.info(f"{progress_pct} % completed...")
+
+                RestManager.send_xai_progress(
+                    Constants.REST_URL_ROOT, self.LOGGER, self.job_info.get_hist_no(), progress_pct
+                )
+
             except Exception as e:
                 self.LOGGER.error(e, exc_info=True)
                 self.LOGGER.error(f"idx : {idx}, data : {line}")
+                self.LOGGER.error("append {} at result_list")
+                result_list.append({})
 
-            # 진행률 표시
-            if int((idx + 1) / len(x) * 100) > progress_pct:
-                progress_pct_float = (idx + 1) / len(x) * 100
-                progress_pct = int(progress_pct_float)
-                self.LOGGER.info(f"{progress_pct_float} % completed...")
-
-                RestManager.send_xai_progress(
-                    Constants.REST_URL_ROOT, self.LOGGER, self.job_info.get_hist_no(), progress_pct_float
-                )
-
-            self.LOGGER.info(f"Line [{idx}] is finished..")
             self.LOGGER.info(f"Loop excution time : [{datetime.now() - loop_start_time}]")
 
         self.LOGGER.info(f"Total excution time : [{datetime.now() - total_start_time}]")
@@ -99,7 +100,7 @@ class Lime(AlgAbstract):
 
             reversed_data = cvt_data[line_idx][s_idx:e_idx]
             for cvt_idx in range(len(self.functions[field_idx]) - 1, -1, -1):  # 역순
-                reversed_data = self.functions[field_idx][cvt_idx].reverse(reversed_data)
+                reversed_data = self.functions[field_idx][cvt_idx].reverse(reversed_data, json_data[line_idx][field.field_name])
             tmp_idx_list, cvt_origin = self.functions[field_idx][-1].get_original_idx(
                 cvt_data=cvt_data[line_idx][s_idx:e_idx], original_data=json_data[line_idx][field.field_name]
             )
@@ -110,7 +111,7 @@ class Lime(AlgAbstract):
         explainer = lime_tabular.LimeTabularExplainer(np.array(cvt_data), feature_names=column_list)
         exp = explainer.explain_instance(
             np.array(cvt_data[line_idx]), predict_fn=self.predict_fn,
-            num_samples=1000, labels=range(unique_labels), num_features=2
+            num_samples=1000, labels=range(unique_labels), num_features=6
         )
         """
             exp.domain_mapper.feature_names : feature name
@@ -160,6 +161,6 @@ class Lime(AlgAbstract):
         self.LOGGER.info(mask)
         self.LOGGER.info(f"inference rst : [{exp.top_labels[0]}]")
         line_rst_dict["inference_result"] = int(inferenced_y[line_idx])
-        line_rst_dict["mask"] = mask
+        line_rst_dict["mask"] = mask.tolist()
 
         return line_rst_dict

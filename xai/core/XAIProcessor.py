@@ -108,8 +108,8 @@ class XAIProcessor(object):
     def _insert_xai_info(self, json_data, result_dict_list: List[Dict]):
         curr_time = datetime.now().strftime('%Y%m%d%H%M%S')
 
-        result_dict_keys = result_dict_list[0].keys()
         for line_idx, jsonline in enumerate(json_data):
+            result_dict_keys = result_dict_list[line_idx].keys()
             for key in result_dict_keys:
                 jsonline[key] = result_dict_list[line_idx][key]
             jsonline["eqp_dt"] = curr_time
