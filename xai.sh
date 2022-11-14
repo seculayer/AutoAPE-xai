@@ -15,7 +15,7 @@ if [ -x "${APP_PATH}/xai/.venv/bin/python3" ]
 then
   PYTHON_BIN="$APP_PATH/xai/.venv/bin/python3"
 else
-  PYTHON_BIN="$(command -v python3)"
+  PYTHON_BIN="$(command -v python3.7)"
   export PYTHONPATH=$PYTHONPATH:$APP_PATH/xai/lib:$APP_PATH/xai
   export PYTHONPATH=$PYTHONPATH:$APP_PATH/pycmmn/lib:$APP_PATH/pycmmn
   export PYTHONPATH=$PYTHONPATH:$APP_PATH/apeflow/lib:$APP_PATH/apeflow
