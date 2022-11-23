@@ -89,6 +89,15 @@ class Constants(metaclass=Singleton):
 
     BATCH_SIZE = int(_CONFIG.get("inference_batch_size", "512"))
 
+    # TABLE FIELD TYPE
+    FIELD_TYPE_NULL = "null"
+    FIELD_TYPE_INT = "int"
+    FIELD_TYPE_FLOAT = "float"
+    FIELD_TYPE_STRING = "string"
+    FIELD_TYPE_IMAGE = "image"
+    FIELD_TYPE_DATE = "date"
+    FIELD_TYPE_LIST = "list"
+
 
 if __name__ == '__main__':
     print(Constants.DIR_DATA_ROOT)

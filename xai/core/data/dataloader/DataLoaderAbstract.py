@@ -13,6 +13,7 @@ from xai.common.Constants import Constants
 from xai.info.FieldInfo import FieldInfo
 from dataconverter.core.ConvertAbstract import ConvertAbstract
 from dataconverter.core.ConvertFactory import ConvertFactory
+from pycmmn.utils.ListParser import ListParser
 
 
 class DataLoaderAbstract(object):
@@ -23,18 +24,21 @@ class DataLoaderAbstract(object):
         self.sftp_client = sftp_client
 
     @staticmethod
-    def _convert(line, fields, functions) -> Tuple[list, list, dict]:
+    def _convert(line, fields: List[FieldInfo], functions) -> Tuple[list, list, dict]:
         features = list()
         labels = list()
 
         for idx, field in enumerate(fields):
-            if not field.multiple():
+            if field.field_type == Constants.FIELD_TYPE_LIST:
+                name = field.field_name
+                value = ListParser.parse(line.get(name, "[]"))
+            elif not field.multiple():
                 name = field.field_name
                 value = line.get(name, "")
             else:
-                value = dict()
+                value = list()
                 for name in field.field_name.split("@COMMA@"):
-                    value[name] = line.get(name, "")
+                    value.append(line.get(name, ""))
 
             # TODO : 한 필드에 2개의 함수가 있을 경우 잘 동작하는지 확인
             for fn in functions[idx]:
