@@ -36,6 +36,12 @@ class XAIJobInfo(object, metaclass=Singleton):
         try:
             path = f"{self.job_dir}/xai/{filename}"
             job_dict = self.sftp_client.load_json_data(path)
+            self.LOGGER.info(f"--------JOB INFO(dataset excluded)----------")
+            for key, value in job_dict:
+                if key == "datasets":
+                    continue
+                self.LOGGER.info(f"{key} : {value}")
+            self.LOGGER.info(f"job load...")
 
         except Exception as e:
             self.LOGGER.error(str(e), exc_info=True)
@@ -106,11 +112,20 @@ class XAIJobInfo(object, metaclass=Singleton):
         return Constants.XAI_ALG_LIME
 
     def get_lib_type(self):
-        return {
+        rst = {
+            "1": Constants.LIB_TYPE_TF_SINGLE,
             "2": Constants.LIB_TYPE_TF,
             "4": Constants.LIB_TYPE_GS,
             "5": Constants.LIB_TYPE_SKL
-        }.get(self.info_dict.get("algorithms", {}).get("lib_type", "2"))
+        }.get(self.info_dict["algorithms"]["lib_type"])
+
+        if rst == Constants.LIB_TYPE_TF_SINGLE:
+            rst = {
+                "XGBoost": Constants.LIB_TYPE_XGB,
+                "LightGBM": Constants.LIB_TYPE_LGBM
+            }.get(self.info_dict["algorithms"]["algorithm_code"])
+
+        return rst
 
     def get_model_id(self):
         return self.info_dict.get("learn_hist_no", None)

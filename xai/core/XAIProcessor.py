@@ -28,6 +28,10 @@ class XAIProcessor(object):
             "{}:{}".format(Constants.MRMS_SVC, Constants.MRMS_SFTP_PORT),
             Constants.MRMS_USER, Constants.MRMS_PASSWD, self.LOGGER
         )
+        self.storage_sftp_manager: SFTPClientManager = SFTPClientManager(
+            "{}:{}".format(Constants.STORAGE_SVC, Constants.STORAGE_SFTP_PORT),
+            Constants.STORAGE_USER, Constants.STORAGE_PASSWD, self.LOGGER
+        )
 
         self.job_info: XAIJobInfo = XAIJobInfoBuilder() \
             .set_hist_no(hist_no=hist_no) \
@@ -87,7 +91,7 @@ class XAIProcessor(object):
     def set_xai_cls(self):
         return {
             # Constants.XAI_ALG_GRAD_SCAM: GradScam(self.model, self.job_info),
-            Constants.XAI_ALG_LIME: Lime(self.model, self.job_info)
+            Constants.XAI_ALG_LIME: Lime(self.model, self.job_info, self.storage_sftp_manager)
         }.get(self.job_info.get_xai_alg(), Constants.XAI_ALG_GRAD_SCAM)
 
     def model_load(self):
@@ -115,7 +119,15 @@ class XAIProcessor(object):
             jsonline["eqp_dt"] = curr_time
             jsonline["xai_hist_no"] = self.job_key
             jsonline["infr_hist_no"] = self.job_info.get_infr_hist_no()
+            if jsonline.__contains__("image"):
+                jsonline.pop("image")
             json_data[line_idx] = jsonline
+
+        if len(result_dict_list) > len(json_data):
+            result_dict_list[-1]["eqp_dt"] = curr_time
+            result_dict_list[-1]["xai_hist_no"] = self.job_key
+            result_dict_list[-1]["infr_hist_no"] = self.job_info.get_infr_hist_no()
+            json_data.append(result_dict_list[-1])
 
         return json_data
 

@@ -29,16 +29,17 @@ class DataLoaderAbstract(object):
 
         self.is_exception = False
 
-    def build_functions(self, fields: List[FieldInfo]) -> List[List[ConvertAbstract]]:
+    @classmethod
+    def build_functions(cls, fields: List[FieldInfo]) -> List[List[ConvertAbstract]]:
         functions: List[List[ConvertAbstract]] = list()
         for field in fields:
             cvt_fn_list: List[ConvertAbstract] = list()
             for fn_info in field.get_function():
                 cvt_fn_list.append(ConvertFactory.create_cvt_fn(
                     cvt_fn_info=fn_info,
-                    logger=self.LOGGER,
+                    logger=cls.LOGGER,
                     cvt_dict=RestManager.get_cnvr_dict(
-                        rest_url_root=Constants.REST_URL_ROOT, logger=self.LOGGER
+                        rest_url_root=Constants.REST_URL_ROOT, logger=cls.LOGGER
                     )
                 ))
             functions.append(cvt_fn_list)

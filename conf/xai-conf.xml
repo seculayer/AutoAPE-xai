@@ -9,6 +9,10 @@
         <name>ape.features.dir</name>
         <value>/processing/ape/division</value>
     </property>
+    <property>
+        <name>ape_web_file_dir</name>
+        <value>/DATA/eyeCloudAI/app/www/store/upload</value>
+    </property>
     <!-- log setting -->
     <property>
         <name>dir_log</name>
@@ -26,6 +30,24 @@
         <description>[INFO, DEBUG, WARN, ERROR, CRITICAL]</description>
     </property>
     <!-- hosts -->
+    <property>
+        <name>storage_svc</name>
+        <!--        <value>ape-storage-svc</value>-->
+        <value>10.1.35.230</value>
+    </property>
+    <property>
+        <name>storage_sftp_port</name>
+        <!--        <value>10122</value>-->
+        <value>30122</value>
+    </property>
+    <property>
+        <name>storage_username</name>
+        <value>HE12RmzKHQtH3bL7tTRqCg==</value>
+    </property>
+    <property>
+        <name>storage_password</name>
+        <value>jTf6XrqcYX1SAhv9JUPq+w==</value>
+    </property>
     <property>
         <name>mrms_svc</name>
         <value>mrms-svc</value>
