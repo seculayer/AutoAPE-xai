@@ -1,6 +1,8 @@
 from typing import Callable
 import joblib
 import tensorflow as tf
+from xgboost import XGBClassifier
+import pickle
 
 from xai.common.Common import Common
 from xai.common.Constants import Constants
@@ -19,7 +21,9 @@ class ModelLoader(object):
     def load(cls, lib_type, model_id):
         case_fn: Callable = {
             Constants.LIB_TYPE_TF: ModelLoader._get_tf_model,
-            Constants.LIB_TYPE_SKL: ModelLoader._get_skl_model
+            Constants.LIB_TYPE_SKL: ModelLoader._get_skl_model,
+            Constants.LIB_TYPE_XGB: ModelLoader._get_xgb_model,
+            Constants.LIB_TYPE_LGBM: ModelLoader._get_lgbm_model
         }.get(lib_type)
 
         ModelLoader._scp_model_from_storage(model_id)
@@ -36,6 +40,25 @@ class ModelLoader(object):
                 cls.LOGGER.error(e, exc_info=True)
         else:
             cls.LOGGER.warn("MODEL FILE IS NOT EXIST : [{}]".format(dir_model))
+
+    @classmethod
+    def _get_xgb_model(cls, dir_model):
+        model = XGBClassifier()
+        try:
+            model.load_model(dir_model + "/model.h5")
+            return model
+        except Exception as e:
+            cls.LOGGER.error(e, exc_info=True)
+            raise e
+
+    @classmethod
+    def _get_lgbm_model(cls, dir_model):
+        try:
+            f = open(dir_model + "/apeflow.model", "rb")
+            return pickle.load(f)
+        except Exception as e:
+            cls.LOGGER.error(e, exc_info=True)
+            raise e
 
     @classmethod
     def _get_tf_model(cls, dir_model):
