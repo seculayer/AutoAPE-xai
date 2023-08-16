@@ -29,6 +29,21 @@
         <value>INFO</value>
         <description>[INFO, DEBUG, WARN, ERROR, CRITICAL]</description>
     </property>
+    <property>
+        <name>lime_image_sample_cnt</name>
+        <value>50</value>
+        <description>lime image explainer parameter</description>
+    </property>
+    <property>
+        <name>lime_tabular_sample_cnt</name>
+        <value>1000</value>
+        <description>lime tabular explainer parameter</description>
+    </property>
+    <property>
+        <name>lime_text_sample_cnt</name>
+        <value>1000</value>
+        <description>lime text explainer parameter</description>
+    </property>
     <!-- hosts -->
     <property>
         <name>storage_svc</name>

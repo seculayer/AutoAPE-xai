@@ -4,7 +4,7 @@
 # Powered by Seculayer © 2021 Service Model Team, R&D Center.
 
 import re
-from typing import List
+from typing import List, Dict
 
 from pycmmn.utils.StringUtil import StringUtil
 from dataconverter.core.ConvertFunctionInfo import ConvertFunctionInfo, ConvertFunctionInfoBuilder
@@ -57,3 +57,6 @@ class FieldInfo(object):
 
     def get_field_name(self) -> str:
         return self.field_name
+
+    def get_statistic(self) -> Dict:
+        return self.stat_dict

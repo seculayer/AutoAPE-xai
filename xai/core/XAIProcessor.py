@@ -112,10 +112,19 @@ class XAIProcessor(object):
     def _insert_xai_info(self, json_data, result_dict_list: List[Dict]):
         curr_time = datetime.now().strftime('%Y%m%d%H%M%S')
 
+        unique_keys = None
+        label_field_info = self.job_info.get_dataset_info().get_fields()[0]
+        if label_field_info.label():
+            unique_keys = label_field_info.get_statistic().get("unique", {}).get("unique").keys()
+
         for line_idx, jsonline in enumerate(json_data):
             result_dict_keys = result_dict_list[line_idx].keys()
             for key in result_dict_keys:
-                jsonline[key] = result_dict_list[line_idx][key]
+                # convert original label
+                if key == "inference_result" and unique_keys is not None:
+                    jsonline[key] = unique_keys[int(result_dict_list[line_idx][key])]
+                else:
+                    jsonline[key] = result_dict_list[line_idx][key]
             jsonline["eqp_dt"] = curr_time
             jsonline["xai_hist_no"] = self.job_key
             jsonline["infr_hist_no"] = self.job_info.get_infr_hist_no()

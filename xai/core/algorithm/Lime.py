@@ -269,7 +269,9 @@ class Lime(AlgAbstract):
             )
             original_idx_dict[field.field_name] = tmp_idx_list
             cvt_dict[field.field_name] = cvt_origin
-        exp = self.explainer.explain_instance(" ".join(reversed_data), eval(f"pipe.{self.predict_fn}"), num_samples=1000)
+        exp = self.explainer.explain_instance(
+            " ".join(reversed_data), eval(f"pipe.{self.predict_fn}"), num_samples=Constants.LIME_TEXT_SAMPLE_CNT
+        )
 
         # store result
         temp_effect_val = dict()
@@ -348,7 +350,7 @@ class Lime(AlgAbstract):
 
         exp = self.explainer.explain_instance(
             np.array(cvt_data[line_idx]), predict_fn=self.predict_fn,
-            num_samples=1000, num_features=6
+            num_samples=Constants.LIME_TABULAR_SAMPLE_CNT, num_features=6
         )
         """
             exp.domain_mapper.feature_names : feature name
@@ -379,7 +381,7 @@ class Lime(AlgAbstract):
         exp = self.explainer.explain_instance(
             np.array(cvt_data[line_idx]),
             classifier_fn=self.predict_fn,  # 각 class 확률 반환
-            num_samples=1000,              # sample space
+            num_samples=Constants.LIME_IMAGE_SAMPLE_CNT,              # sample space
             segmentation_fn=self.segmenter  # 분할 알고리즘
         )
         img, mask = exp.get_image_and_mask(exp.top_labels[0])

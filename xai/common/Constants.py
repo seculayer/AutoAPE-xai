@@ -94,6 +94,10 @@ class Constants(metaclass=Singleton):
     XAI_ALG_GRAD_SCAM = "gram_scam"
     XAI_ALG_LIME = "lime"
 
+    LIME_IMAGE_SAMPLE_CNT = int(_CONFIG.get("lime_image_sample_cnt", "50"))
+    LIME_TABULAR_SAMPLE_CNT = int(_CONFIG.get("lime_tabular_sample_cnt", "1000"))
+    LIME_TEXT_SAMPLE_CNT = int(_CONFIG.get("lime_text_sample_cnt", "1000"))
+
     STATUS_XAI_COMPLETE = "6"
     STATUS_XAI_ERROR = "7"
 
