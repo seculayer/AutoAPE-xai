@@ -4,10 +4,12 @@
 # Powered by Seculayer © 2021 Service Model Team, R&D Center.
 
 import logging
+from typing import Dict
 
 from pycmmn.Singleton import Singleton
 from xai.common.Constants import Constants
-from pycmmn.exceptions.JobFileLoadError import JobFileLoadError
+from pycmmn.exceptions.FileLoadError import FileLoadError
+from pycmmn.exceptions.JsonParsingError import JsonParsingError
 from xai.info.DatasetInfo import DatasetInfo
 from pycmmn.sftp.SFTPClientManager import SFTPClientManager
 from pycmmn.utils.StringUtil import StringUtil
@@ -35,17 +37,19 @@ class XAIJobInfo(object, metaclass=Singleton):
         filename = self._create_job_filename()
         try:
             path = f"{self.job_dir}/xai/{filename}"
-            job_dict = self.sftp_client.load_json_data(path)
+            job_dict: Dict = self.sftp_client.load_json_data(path)
             self.LOGGER.info(f"--------JOB INFO(dataset excluded)----------")
-            for key, value in job_dict:
+            for key, value in job_dict.items():
                 if key == "datasets":
                     continue
                 self.LOGGER.info(f"{key} : {value}")
             self.LOGGER.info(f"job load...")
-
+        except FileNotFoundError as e:
+            self.LOGGER.error(str(e), exc_info=True)
+            raise FileLoadError(file_name=filename)
         except Exception as e:
             self.LOGGER.error(str(e), exc_info=True)
-            raise JobFileLoadError(key=filename)
+            raise JsonParsingError()
 
         return job_dict
 
