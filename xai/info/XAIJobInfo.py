@@ -4,6 +4,7 @@
 # Powered by Seculayer © 2021 Service Model Team, R&D Center.
 
 import logging
+from typing import Dict
 
 from pycmmn.Singleton import Singleton
 from xai.common.Constants import Constants
@@ -36,9 +37,9 @@ class XAIJobInfo(object, metaclass=Singleton):
         filename = self._create_job_filename()
         try:
             path = f"{self.job_dir}/xai/{filename}"
-            job_dict = self.sftp_client.load_json_data(path)
+            job_dict: Dict = self.sftp_client.load_json_data(path)
             self.LOGGER.info(f"--------JOB INFO(dataset excluded)----------")
-            for key, value in job_dict:
+            for key, value in job_dict.items():
                 if key == "datasets":
                     continue
                 self.LOGGER.info(f"{key} : {value}")

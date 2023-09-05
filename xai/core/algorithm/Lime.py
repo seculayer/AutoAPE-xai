@@ -18,12 +18,15 @@ from pycmmn.sftp.SFTPClientManager import SFTPClientManager
 from pycmmn.rest.RestManager import RestManager
 from pycmmn.utils.CV2Utils import CV2Utils
 from pycmmn.utils.FileUtils import FileUtils
+from xai.common.Common import Common
 from xai.common.Constants import Constants
 from xai.info.XAIJobInfo import XAIJobInfo
 from xai.core.algorithm.AlgAbstract import AlgAbstract
 
 
 class Lime(AlgAbstract):
+    LOGGER = Common.LOGGER.getLogger()
+
     def __init__(self, model, job_info: XAIJobInfo, sftp_manager: SFTPClientManager):
         super().__init__(model, job_info)
         self.data_type = self.get_dataset_type()
@@ -69,26 +72,37 @@ class Lime(AlgAbstract):
 
     def define_explainer(self, cvt_data) -> None:
         if self.data_type == Constants.DATASET_FORMAT_IMAGE:
-            self.explainer = lime_image.LimeImageExplainer()
-            # 이미지 분할 알고리즘 종류 slic, quickshift, felzenszwalb
-            self.segmenter = SegmentationAlgorithm(
-                'slic',         # 분할 알고리즘 이름
-                n_segments=30,   # 이미지 분할 조각 개수
-                compactness=3,  # 유사한 파트를 합치는 함수
-                sigma=1         # 스무딩 역할: 0과 1사이의 float
-            )
+            try:
+                self.explainer = lime_image.LimeImageExplainer()
+                # 이미지 분할 알고리즘 종류 slic, quickshift, felzenszwalb
+                self.segmenter = SegmentationAlgorithm(
+                    'slic',         # 분할 알고리즘 이름
+                    n_segments=30,   # 이미지 분할 조각 개수
+                    compactness=3,  # 유사한 파트를 합치는 함수
+                    sigma=1         # 스무딩 역할: 0과 1사이의 float
+                )
+            except Exception as e:
+                self.LOGGER.error(e, exc_info=True)
+
         elif self.data_type == Constants.DATASET_FORMAT_TEXT:
-            self.explainer = lime_text.LimeTextExplainer(random_state=42, split_expression=r' ')
-            # self.explainer = lime_text.LimeTextExplainer(random_state=42, split_expression=r'[\W_0-9]+')
+            try:
+                self.explainer = lime_text.LimeTextExplainer(random_state=42, split_expression=r' ')
+                # self.explainer = lime_text.LimeTextExplainer(random_state=42, split_expression=r'[\W_0-9]+')
+            except Exception as e:
+                self.LOGGER.error(e, exc_info=True)
 
         elif self.data_type == Constants.DATASET_FORMAT_TABLE:
             column_list = list()
-            for field_idx, field in enumerate(self.fields):
-                if field.is_label:
-                    continue
-                column_list.append(field.field_name)
+            try:
+                for field_idx, field in enumerate(self.fields):
+                    if field.is_label:
+                        continue
+                    column_list.append(field.field_name)
 
-            self.explainer = lime_tabular.LimeTabularExplainer(np.array(cvt_data), feature_names=column_list)
+                self.explainer = lime_tabular.LimeTabularExplainer(np.array(cvt_data), feature_names=column_list)
+            except Exception as e:
+                self.LOGGER.error(f"colum_list : {column_list}, cvt_data_shape : {np.shape(np.array(cvt_data))}")
+                self.LOGGER.error(e, exc_info=True)
 
     def run(self, data: Dict, json_data: List):
         x = data['x']
@@ -107,7 +121,7 @@ class Lime(AlgAbstract):
                     Constants.DATASET_FORMAT_TABLE: self.tabular_data_run
                 }.get(self.data_type, self.text_data_run)
 
-                line_rst_dict = case(x, json_data, idx)
+                line_rst_dict = case(x[idx], json_data[idx], idx)
 
                 result_list.append(line_rst_dict)
 
@@ -245,8 +259,8 @@ class Lime(AlgAbstract):
             )
             FileUtils.remove_dir(f"{self.job_info.get_hist_no()}")
 
-    def text_data_run(self, cvt_data, json_data, line_idx):
-        inferenced_y = self.model_inference(cvt_data)
+    def text_data_run(self, cvt_line_data, json_line_data, line_idx):
+        inferenced_y = self.model_inference([cvt_line_data])
 
         pipe = make_pipeline(self.functions[-1][-1], self.model)
         line_rst_dict = dict()
@@ -261,11 +275,11 @@ class Lime(AlgAbstract):
             max_len = self.functions[field_idx][-1].get_num_feat()
             e_idx = s_idx + max_len
 
-            reversed_data = cvt_data[line_idx][s_idx:e_idx]
+            reversed_data = cvt_line_data[s_idx:e_idx]
             for cvt_idx in range(len(self.functions[field_idx]) - 1, -1, -1):  # 역순
-                reversed_data = self.functions[field_idx][cvt_idx].reverse(reversed_data, json_data[line_idx][field.field_name])
+                reversed_data = self.functions[field_idx][cvt_idx].reverse(reversed_data, json_line_data[field.field_name])
             tmp_idx_list, cvt_origin = self.functions[field_idx][-1].get_original_idx(
-                cvt_data=cvt_data[line_idx][s_idx:e_idx], original_data=json_data[line_idx][field.field_name]
+                cvt_data=cvt_line_data[s_idx:e_idx], original_data=json_line_data[field.field_name]
             )
             original_idx_dict[field.field_name] = tmp_idx_list
             cvt_dict[field.field_name] = cvt_origin
@@ -280,7 +294,7 @@ class Lime(AlgAbstract):
         line_rst_dict["lime_effect_val"] = temp_effect_val
         line_rst_dict["lime_class_names"] = exp.class_names
         line_rst_dict["lime_predict_proba"] = exp.predict_proba.tolist()
-        line_rst_dict["inference_result"] = int(inferenced_y[line_idx])
+        line_rst_dict["inference_result"] = int(inferenced_y[0])
         line_rst_dict["origin_idx_dict"] = original_idx_dict
         line_rst_dict["cvt_dict"] = cvt_dict
         line_rst_dict["lime_cvt_text"] = " ".join(reversed_data)
@@ -289,9 +303,9 @@ class Lime(AlgAbstract):
 
         return line_rst_dict
 
-    def text_data_run_deprecated(self, cvt_data, json_data, line_idx):
+    def text_data_run_deprecated(self, cvt_line_data, json_line_data, line_idx):
 
-        inferenced_y = self.model_inference(cvt_data)
+        inferenced_y = self.model_inference([cvt_line_data])
 
         column_list = list()
         original_idx_dict = dict()
@@ -307,19 +321,19 @@ class Lime(AlgAbstract):
             max_len = self.functions[field_idx][-1].get_num_feat()
             e_idx = s_idx + max_len
 
-            reversed_data = cvt_data[line_idx][s_idx:e_idx]
+            reversed_data = cvt_line_data[s_idx:e_idx]
             for cvt_idx in range(len(self.functions[field_idx]) - 1, -1, -1):  # 역순
-                reversed_data = self.functions[field_idx][cvt_idx].reverse(reversed_data, json_data[line_idx][field.field_name])
+                reversed_data = self.functions[field_idx][cvt_idx].reverse(reversed_data, json_line_data[field.field_name])
             tmp_idx_list, cvt_origin = self.functions[field_idx][-1].get_original_idx(
-                cvt_data=cvt_data[line_idx][s_idx:e_idx], original_data=json_data[line_idx][field.field_name]
+                cvt_data=cvt_line_data[s_idx:e_idx], original_data=json_line_data[field.field_name]
             )
             original_idx_dict[field.field_name] = tmp_idx_list
             cvt_dict[field.field_name] = cvt_origin
             column_list.extend(reversed_data)
 
-        explainer = lime_tabular.LimeTabularExplainer(np.array(cvt_data), feature_names=column_list)
+        explainer = lime_tabular.LimeTabularExplainer(np.array(cvt_line_data), feature_names=column_list)
         exp = explainer.explain_instance(
-            np.array(cvt_data[line_idx]), predict_fn=self.predict_fn,
+            np.array(cvt_line_data), predict_fn=self.predict_fn,
             num_samples=1000, labels=range(unique_labels), num_features=6
         )
         """
@@ -336,7 +350,7 @@ class Lime(AlgAbstract):
         line_rst_dict["effect_val"] = temp_effect_val
         line_rst_dict["class_names"] = exp.class_names
         line_rst_dict["predict_proba"] = exp.predict_proba.tolist()
-        line_rst_dict["inference_result"] = int(inferenced_y[line_idx])
+        line_rst_dict["inference_result"] = int(inferenced_y[0])
         line_rst_dict["origin_idx_dict"] = original_idx_dict
         line_rst_dict["cvt_dict"] = cvt_dict
 
@@ -344,12 +358,12 @@ class Lime(AlgAbstract):
 
         return line_rst_dict
 
-    def tabular_data_run(self, cvt_data, json_data, line_idx):
-        inferenced_y = self.model_inference(cvt_data)
+    def tabular_data_run(self, cvt_line_data, json_line_data, line_idx):
+        inferenced_y = self.model_inference([cvt_line_data])
         line_rst_dict = dict()
 
         exp = self.explainer.explain_instance(
-            np.array(cvt_data[line_idx]), predict_fn=self.predict_fn,
+            np.array(cvt_line_data), predict_fn=self.predict_fn,
             num_samples=Constants.LIME_TABULAR_SAMPLE_CNT, num_features=6
         )
         """
@@ -368,18 +382,18 @@ class Lime(AlgAbstract):
         line_rst_dict["lime_predict_proba"] = exp.predict_proba.tolist()
         line_rst_dict["lime_feature_names"] = exp.domain_mapper.feature_names
         line_rst_dict["lime_feature_values"] = exp.domain_mapper.feature_values
-        line_rst_dict["inference_result"] = int(inferenced_y[line_idx])
-        line_rst_dict["cvt_data"] = cvt_data[line_idx]
+        line_rst_dict["inference_result"] = int(inferenced_y[0])
+        line_rst_dict["cvt_data"] = cvt_line_data
 
         return line_rst_dict
 
-    def image_data_run(self, cvt_data, json_data, line_idx):
-        inferenced_y = self.model_inference(cvt_data)
+    def image_data_run(self, cvt_line_data, json_line_data, line_idx):
+        inferenced_y = self.model_inference([cvt_line_data])
 
         line_rst_dict = dict()
 
         exp = self.explainer.explain_instance(
-            np.array(cvt_data[line_idx]),
+            np.array(cvt_line_data),
             classifier_fn=self.predict_fn,  # 각 class 확률 반환
             num_samples=Constants.LIME_IMAGE_SAMPLE_CNT,              # sample space
             segmentation_fn=self.segmenter  # 분할 알고리즘
@@ -391,7 +405,7 @@ class Lime(AlgAbstract):
         mask = np.expand_dims(mask, axis=2)
         masked_img: np.ndarray = img * mask
         masked_thumbnail_img = CV2Utils.resize(masked_img.astype("float32"), (256, 256))
-        line_json = json_data[line_idx]
+        line_json = json_line_data
 
         self.make_rst_image(line_idx, line_json, masked_img, masked_thumbnail_img)
 
@@ -402,7 +416,9 @@ class Lime(AlgAbstract):
         line_rst_dict["masked_file_path"] = f"/xai/masked_image/{self.job_info.get_hist_no()}"
         line_rst_dict["masked_thumbnail_path"] = f"/xai/masked_thumbnail_image/{self.job_info.get_hist_no()}_thumbnail"
 
-        line_rst_dict["inference_result"] = int(inferenced_y[line_idx])
+        if inferenced_y.shape[-1] >= 2:
+            inferenced_y = inferenced_y.argmax(axis=1)
+        line_rst_dict["inference_result"] = int(inferenced_y[0])
         # line_rst_dict["mask"] = mask.tolist()
 
         return line_rst_dict

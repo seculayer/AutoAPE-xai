@@ -115,7 +115,7 @@ class XAIProcessor(object):
         unique_keys = None
         label_field_info = self.job_info.get_dataset_info().get_fields()[0]
         if label_field_info.label():
-            unique_keys = label_field_info.get_statistic().get("unique", {}).get("unique").keys()
+            unique_keys = list(label_field_info.get_statistic().get("unique", {}).get("unique").keys())
 
         for line_idx, jsonline in enumerate(json_data):
             result_dict_keys = result_dict_list[line_idx].keys()
