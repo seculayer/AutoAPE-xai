@@ -94,7 +94,7 @@ class XAIJobInfo(object, metaclass=Singleton):
         return self.info_dict.get("project_id")
 
     def get_target_field(self) -> str:
-        return self.info_dict.get("project_target_field")
+        return self.info_dict.get("target_field")
 
     def get_file_list(self) -> list:
         return self.info_dict.get("datasets", {}).get("metadata_json", {}).get("file_list")
