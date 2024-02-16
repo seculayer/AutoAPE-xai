@@ -6,7 +6,6 @@
 from typing import List
 
 from xai.common.Constants import Constants
-from dataconverter.core.ConvertAbstract import ConvertAbstract
 from xai.core.data.dataloader.DataLoaderAbstract import DataLoaderAbstract
 
 
@@ -16,9 +15,6 @@ class DataLoaderImage(DataLoaderAbstract):
         super().__init__(job_info, sftp_client)
 
     def read(self, file_list, fields):
-        functions: List[List[ConvertAbstract]] = self.build_functions(fields)
-        self.LOGGER.info(functions)
-
         features = list()
         labels = list()
         origin_data = list()
@@ -33,8 +29,10 @@ class DataLoaderImage(DataLoaderAbstract):
                 line = next(generator)
                 if line == "#file_end#":
                     break
-                feature, label, data = self._convert(line, fields, functions)
+                feature, label, data = self._convert(line, fields, self.functions)
                 features.append(feature), labels.append(label), origin_data.append(data)
+
+            self.is_exception = False
 
         self.make_inout_units(features, fields)
         return [features, labels, origin_data]

@@ -55,6 +55,7 @@ class Constants(metaclass=Singleton):
         FileUtils.get_realpath(file=__file__) + "/resources"
     )
     DIR_RESULT = DIR_PROCESSING + _CONFIG.get("dir_result", "/results_xai")
+    DIR_WEB_FILE = _CONFIG.get("ape_web_file_dir", "/eyeCloudAI/app/www/store/upload")
 
     # Logs
     DIR_LOG = _CONFIG.get("dir_log", "./logs")
@@ -63,10 +64,15 @@ class Constants(metaclass=Singleton):
 
     # Hosts
     MRMS_SVC = _CONFIG.get("mrms_svc", "mrms-svc")
-    MRMS_USER = _CONFIG.get("mrms_username", "HE12RmzKHQtH3bL7tTRqCg==")
-    MRMS_PASSWD = _CONFIG.get("mrms_password", "jTf6XrqcYX1SAhv9JUPq+w==")
     MRMS_SFTP_PORT = int(_CONFIG.get("mrms_sftp_port", "10022"))
     MRMS_REST_PORT = int(_CONFIG.get("mrms_rest_port", "9200"))
+    MRMS_USER = _CONFIG.get("mrms_username", "HE12RmzKHQtH3bL7tTRqCg==")
+    MRMS_PASSWD = _CONFIG.get("mrms_password", "jTf6XrqcYX1SAhv9JUPq+w==")
+
+    STORAGE_SVC = _CONFIG.get("storage_svc", "ape-storage-svc")
+    STORAGE_SFTP_PORT = int(_CONFIG.get("storage_sftp_port", "10122"))
+    STORAGE_USER = _CONFIG.get("storage_username", "HE12RmzKHQtH3bL7tTRqCg==")
+    STORAGE_PASSWD = _CONFIG.get("storage_password", "jTf6XrqcYX1SAhv9JUPq+w==")
 
     REST_URL_ROOT = "http://{}:{}".format(
         MRMS_SVC, MRMS_REST_PORT
@@ -74,20 +80,37 @@ class Constants(metaclass=Singleton):
 
     JOB_TYPE = "xai"
 
+    LIB_TYPE_TF_SINGLE = "TF_SINGLE"
     LIB_TYPE_TF = "TF"
     LIB_TYPE_GS = "GS"
     LIB_TYPE_SKL = "SKL"
+    LIB_TYPE_LGBM = "LGBM"
+    LIB_TYPE_XGB = "XGB"
 
     DATASET_FORMAT_TEXT = "1"
     DATASET_FORMAT_IMAGE = "2"
+    DATASET_FORMAT_TABLE = "3"
 
     XAI_ALG_GRAD_SCAM = "gram_scam"
     XAI_ALG_LIME = "lime"
+
+    LIME_IMAGE_SAMPLE_CNT = int(_CONFIG.get("lime_image_sample_cnt", "50"))
+    LIME_TABULAR_SAMPLE_CNT = int(_CONFIG.get("lime_tabular_sample_cnt", "1000"))
+    LIME_TEXT_SAMPLE_CNT = int(_CONFIG.get("lime_text_sample_cnt", "1000"))
 
     STATUS_XAI_COMPLETE = "6"
     STATUS_XAI_ERROR = "7"
 
     BATCH_SIZE = int(_CONFIG.get("inference_batch_size", "512"))
+
+    # TABLE FIELD TYPE
+    FIELD_TYPE_NULL = "null"
+    FIELD_TYPE_INT = "int"
+    FIELD_TYPE_FLOAT = "float"
+    FIELD_TYPE_STRING = "string"
+    FIELD_TYPE_IMAGE = "image"
+    FIELD_TYPE_DATE = "date"
+    FIELD_TYPE_LIST = "list"
 
 
 if __name__ == '__main__':

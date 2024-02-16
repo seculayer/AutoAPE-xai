@@ -4,23 +4,25 @@
 # Powered by Seculayer © 2021 Service Model Team, R&D Center.
 
 import re
-from typing import List
+from typing import List, Dict
 
 from pycmmn.utils.StringUtil import StringUtil
 from dataconverter.core.ConvertFunctionInfo import ConvertFunctionInfo, ConvertFunctionInfoBuilder
 
 
 class FieldInfo(object):
-    def __init__(self, field_dict: dict, metadata_dict: dict, project_target_field: str):
+    def __init__(self, field_dict: dict, metadata_dict: dict, target_field: str):
         self.field_sn = StringUtil.get_int(field_dict.get("field_sn", 0))
         self.field_name = field_dict.get("name", "")
-        self.target_field = project_target_field
+        self.target_field = target_field
         self.stat_dict = field_dict.get("statistic", dict())
+        self.field_type = field_dict.get("field_type")
 
         if self.target_field == self.field_name:
             self.is_label = True
         else:
             self.is_label = False
+        self.is_multiple = True if len(self.field_name.split("@COMMA@")) >= 2 else False
         self.function: List[ConvertFunctionInfo] = self._create_functions(field_dict.get("functions", ""))
 
     def __str__(self) -> str:
@@ -28,6 +30,9 @@ class FieldInfo(object):
 
     def label(self) -> bool:
         return self.is_label
+
+    def multiple(self) -> bool:
+        return self.is_multiple
 
     # --- static variables
     _REGEX_FN_STR = "(\\[\\[@[\\w\\d_]+\\([^\\]]*\\)\\]\\])"
@@ -52,3 +57,6 @@ class FieldInfo(object):
 
     def get_field_name(self) -> str:
         return self.field_name
+
+    def get_statistic(self) -> Dict:
+        return self.stat_dict

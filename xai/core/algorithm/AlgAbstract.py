@@ -20,7 +20,7 @@ class AlgAbstract(object):
         self.model = model
         self.job_info = job_info
         self.functions: List[List[ConvertAbstract]] = DataLoaderAbstract.build_functions(
-            self.job_info.get_dataset_info().get_fields()
+            fields=self.job_info.get_dataset_info().get_fields()
         )
         self.fields = self.job_info.get_dataset_info().get_fields()
 
@@ -41,7 +41,7 @@ class AlgAbstract(object):
                 tmp_results = np.argmax(tmp_results, axis=1)
             except:
                 # case sklearn
-                tmp_results = self.model.predict(batch_x)
+                tmp_results = self.model.predict(np.array(batch_x))
             if start == 0:
                 results = tmp_results
             else:
